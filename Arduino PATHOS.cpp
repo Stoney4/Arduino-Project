@@ -2,13 +2,13 @@
 //  PATHOS (Pressure, Acceleration, Temperature, Humidity, and Orentation Sensors)
 //  ==============================================================================
 
-#include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP3XX.h>
-#include <Adafruit_SHTC3.h>
-#include <Adafruit_LIS3DH.h>
+//#include <Wire.h>
+//#include <SPI.h>
+//#include <SD.h>
+//#include <Adafruit_Sensor.h>
+//#include <Adafruit_BMP3XX.h>
+//#include <Adafruit_SHTC3.h>
+//#include <Adafruit_LIS3DH.h>
 
 #define SEALEVELPRESSURE_HPA (1013.25)  //Altitude in meters
 
