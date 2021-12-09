@@ -4,28 +4,17 @@
 #include <SPI.h> // SPI storage protocol
 #include <SD.h> // SD card library
 
-#define cardSelect 4 // pin that microSD is plugged into
+#define cardSelect 10 // pin that microSD is plugged into
 
 File dataFile;
 
-#include <Adafruit_APDS9960.h> //For debug purposes- also needed for the proximity, color, and light sensor
+#include <Adafruit_APDS9960.h> //For debug purposes- also needed if you are using the proximity, color, and light sensor
 
 //__Temperature and barometric pressure__//
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp280;
 float temperature, pressure, altitude;
 int altitudeZero = 0; // used to set the starting altitude to zero
-
-//__Magnetometer (Compass)__//
-#include <Adafruit_LIS3MDL.h>
-Adafruit_LIS3MDL lis3mdl;
-float magnetic_x, magnetic_y, magnetic_z;
-
-//__Accelerometer and gyroscope__//
-#include <Adafruit_LSM6DS33.h>
-Adafruit_LSM6DS33 lsm6ds33;
-float accel_x, accel_y, accel_z;
-float gyro_x, gyro_y, gyro_z;
 
 //__Humidity__//
 #include <Adafruit_SHT31.h>
@@ -44,18 +33,15 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW); // Turn off led while in setup
   
   Serial.begin(115200);
-  while(!Serial); // MUST comment out line or code will not log data, but need this for debug
+  //while(!Serial); // MUST comment out line or code will not continue, but need this for debug
 
   Serial.println("Hello World!");
 
   bmp280.begin();  // Temperature and barometric pressure
-  lis3mdl.begin_I2C();  // Magnetomater (Compass)
-  lsm6ds33.begin_I2C();  // Accelerometer and gyroscope
   sht30.begin();  // Humidity
 
   altitudeZero = bmp280.readAltitude(1013.25); // Read altitude and use current altitude as the ground, aka 0
 
-  
   // SD card Setup
   pinMode(13, OUTPUT);
 
@@ -86,7 +72,7 @@ void setup() {
       pinMode(8, OUTPUT);
       Serial.println("Ready!");
     }
-    dataFile.println("Runtime(seconds),Battery(v),Temperature(F),Pressure(Pa),Altitude(m),Humidity(%),Compass Bearing(uTesla),Accelerometer(m/s^2),Gyroscope(dps)");
+    dataFile.println("Runtime(seconds),Battery(v),Temperature(F),Pressure(Pa),Altitude(m),Humidity(%)");
     
     digitalWrite(LED_BUILTIN, HIGH); // Turn on led after setup
   }
@@ -142,41 +128,7 @@ void loop() {
   
     Serial.print("Humidity: "); Serial.print(humidity); Serial.println("%");
     
-    dataFile.print(humidity); dataFile.print(",");
-    /*************************************************************************/
-  
-  
-    /*************************************************************************/
-    // Magnetomater (Compass)
-    lis3mdl.read();
-    magnetic_x = lis3mdl.x;
-    magnetic_y = lis3mdl.y;
-    magnetic_z = lis3mdl.z;
-  
-    Serial.print("Compass Bearing(uTesla):"); Serial.print(" X:"); Serial.print(magnetic_x); Serial.print(" Y:"); Serial.print(magnetic_y); Serial.print(" Z:"); Serial.println(magnetic_z);
-    
-    dataFile.print(magnetic_x); dataFile.print(":"); dataFile.print(magnetic_y); dataFile.print(":"); dataFile.print(magnetic_z); dataFile.print(",");
-    /*************************************************************************/
-  
-  
-    /*************************************************************************/
-    // Accelerometer and gyroscope
-    sensors_event_t accel;
-    sensors_event_t gyro;
-    sensors_event_t temp;
-    lsm6ds33.getEvent(&accel, &gyro, &temp);
-    accel_x = accel.acceleration.x;
-    accel_y = accel.acceleration.y;
-    accel_z = accel.acceleration.z;
-    gyro_x = gyro.gyro.x;
-    gyro_y = gyro.gyro.y;
-    gyro_z = gyro.gyro.z;
-  
-    Serial.print("Accelerometer(m/s^2):"); Serial.print(" X:"); Serial.print(accel_x); Serial.print(" Y:"); Serial.print(accel_y); Serial.print(" Z:"); Serial.println(accel_z);
-    Serial.print("Gyroscope(dps):"); Serial.print(" X:"); Serial.print(gyro_x); Serial.print(" Y:"); Serial.print(gyro_y); Serial.print(" Z:"); Serial.println(gyro_z);
-    
-    dataFile.print(accel_x); dataFile.print(":"); dataFile.print(accel_y); dataFile.print(":"); dataFile.print(accel_z); dataFile.print(",");
-    dataFile.print(gyro_x); dataFile.print(":"); dataFile.print(gyro_y); dataFile.print(":"); dataFile.print(gyro_z); dataFile.print(",");
+    dataFile.println(humidity);
     /*************************************************************************/
   
     dataFile.println(); // New line after data write
